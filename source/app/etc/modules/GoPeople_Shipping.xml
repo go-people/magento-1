@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+/*
+ * @category    GoPeople
+ * @package     GoPeople_Shipping
+ * @copyright   Copyright (c) 2018 Ekky Software Pty Ltd (http://www.ekkysoftware.com)
+ * @license     Proprietary, All Rights Reserved
+ */
+-->
+<config>
+    <modules>
+        <GoPeople_Shipping>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <Mage_Shipping/>
+            </depends>
+        </GoPeople_Shipping>
+    </modules>
+</config>

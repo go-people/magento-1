@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category    GoPeople
+ * @package     GoPeople_Shipping
+ * @copyright   Copyright (c) 2018 Ekky Software Pty Ltd (http://www.ekkysoftware.com)
+ * @license     Proprietary, All Rights Reserved
+ */
+-->
+<config>
+    <modules>
+        <GoPeople_Shipping>
+            <version>1.0.0</version>
+        </GoPeople_Shipping>
+    </modules>
+    <global>
+        <blocks>
+            <gopeople_shipping>
+                <class>GoPeople_Shipping_Block</class>
+            </gopeople_shipping>
+        </blocks>
+        <helpers>
+            <gopeople_shipping>
+                <class>GoPeople_Shipping_Helper</class>
+            </gopeople_shipping>
+        </helpers>
+        <models>
+            <gopeople_shipping>
+                <class>GoPeople_Shipping_Model</class>
+            </gopeople_shipping>
+        </models>
+        <resources>
+            <gopeople_shipping_setup>
+                <setup>
+                    <module>GoPeople_Shipping</module>
+                </setup>
+            </gopeople_shipping_setup>
+        </resources>
+        <template>
+            <email>
+                <gopeople_email_shipment>
+                   <label>New Go People Shipment</label>
+                   <file>gopeople_shipment_new.html</file>
+                   <type>html</type>
+               </gopeople_email_shipment>
+            </email>
+        </template>
+    </global>
+    <frontend>
+        <routers>
+            <gopeople_shipping>
+                <use>standard</use>
+                <args>
+                    <module>GoPeople_Shipping</module>
+                    <frontName>gopeople</frontName>
+                </args>
+            </gopeople_shipping>
+        </routers>
+        <translate>
+            <modules>
+                <gopeople_shipping>
+                    <files>
+                        <default>gopeople_shipping.csv</default>
+                    </files>
+                </gopeople_shipping>
+            </modules>
+        </translate>
+    </frontend>
+    <adminhtml>
+        <translate>
+            <modules>
+                <gopeople_shipping>
+                    <files>
+                        <default>gopeople_shipping.csv</default>
+                    </files>
+                </gopeople_shipping>
+            </modules>
+        </translate>
+    </adminhtml>
+    <default>
+        <carriers>
+            <gopeople>
+                <model>GoPeople_Shipping_Model_Carrier</model>
+                <max_package_weight>10</max_package_weight>
+                <active>0</active>
+                <title>Go People</title>
+                <services>on_demand,set_run,shift</services>
+                <email>general</email>
+                <specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
+                <showmethod>0</showmethod>
+            </gopeople>
+        </carriers>
+    </default>
+</config>
