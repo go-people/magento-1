@@ -45,6 +45,17 @@
                </gopeople_email_shipment>
             </email>
         </template>
+        <events>
+            <sales_order_payment_pay>
+                <observers>
+                    <gopeople_shipping>
+                        <type>singleton</type>
+                        <class>gopeople_shipping/observer</class>
+                        <method>onSalesOrderPaymentPay</method>
+                    </gopeople_shipping>
+                </observers>
+            </sales_order_payment_pay>
+        </events>
     </global>
     <frontend>
         <routers>

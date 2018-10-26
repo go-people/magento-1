@@ -40,27 +40,6 @@ implements Mage_Shipping_Model_Carrier_Interface
     protected $_defaultSandboxUrl = 'http://api-demo.gopeople.com.au/';
 
     /**
-     * Rate request data
-     *
-     * @var Mage_Shipping_Model_Rate_Request|null
-     */
-    protected $_request = null;
-
-    /**
-     * Raw rate request data
-     *
-     * @var Varien_Object|null
-     */
-    protected $_rawRequest = null;
-
-    /**
-     * Rate result data
-     *
-     * @var Mage_Shipping_Model_Rate_Result|null
-     */
-    protected $_result = null;
-
-    /**
      * Flag for check carriers for activity
      *
      * @var string
@@ -239,73 +218,58 @@ implements Mage_Shipping_Model_Carrier_Interface
             $curl->close();
 
             if(isset($data['errorCode']) && 0 < (int)$data['errorCode']){
-                $error = Mage::getModel('shipping/rate_result_error');
-                $error->setCarrier($this->_code);
-                $error->setCarrierTitle($this->getConfigData('title'));
                 $errorMsg = isset($data['message']) && !empty($data['message']) ? $data['message'] : $this->getConfigData('specificerrmsg');
-                $error->setErrorMessage(__($errorMsg ? $errorMsg : 'Sorry, but we can\'t deliver to the destination with this shipping module.'));
-                return $error;
+                return Mage::getModel('shipping/rate_result_error')
+                    ->setCarrier($this->_code)
+                    ->setCarrierTitle($this->getConfigData('title'))
+                    ->setErrorMessage(__($errorMsg ? $errorMsg : 'Sorry, but we can\'t deliver to the destination with this shipping module.'));
             }
             if(isset($data['result']) && is_array($data['result']) && 0 < count($data['result'])){
                 $services = explode(',',$this->getConfigData('services'));
                 $result = Mage::getModel('shipping/rate_result');
                 if(in_array('on_demand', $services) && isset($data['result']['onDemandPriceList']) && is_array($data['result']['onDemandPriceList'])){
                     foreach ($data['result']['onDemandPriceList'] as $onDemand) {
-                        $rate = Mage::getModel('shipping/rate_result_method');
-                        $rate->setCarrier($this->_code);
-                        $rate->setCarrierTitle($this->getConfigData('title'));
-                        $rate->setMethod($this->_slugify($onDemand['serviceName']));
-                        $rate->setMethodTitle(ucwords($onDemand['serviceName']));
-                        $rate->setCost($onDemand['amount']);
-                        $rate->setPrice($onDemand['amount']);
-                        $result->append($rate);
+                        $result->append(Mage::getModel('shipping/rate_result_method')
+                                ->setCarrier($this->_code)
+                                ->setCarrierTitle($this->getConfigData('title'))
+                                ->setMethod($this->_slugify($onDemand['serviceName']))
+                                ->setMethodTitle(ucwords($onDemand['serviceName']))
+                                ->setCost($onDemand['amount'])
+                                ->setPrice($onDemand['amount']));
                     }
                 }
                 if(in_array('set_run', $services) && isset($data['result']['setRunPriceList']) && is_array($data['result']['setRunPriceList'])){
                     foreach ($data['result']['setRunPriceList'] as $setRun) {
-                        $rate = Mage::getModel('shipping/rate_result_method');
-                        $rate->setCarrier($this->_code);
-                        $rate->setCarrierTitle($this->getConfigData('title'));
-                        $rate->setMethod($this->_slugify($onDemand['serviceName']));
-                        $rate->setMethodTitle(ucwords($onDemand['serviceName']));
-                        $rate->setCost($onDemand['amount']);
-                        $rate->setPrice($onDemand['amount']);
-                        $result->append($rate);
+                        $result->append(Mage::getModel('shipping/rate_result_method')
+                                ->setCarrier($this->_code)
+                                ->setCarrierTitle($this->getConfigData('title'))
+                                ->setMethod($this->_slugify($setRun['serviceName']))
+                                ->setMethodTitle(ucwords($setRun['serviceName']))
+                                ->setCost($setRun['amount'])
+                                ->setPrice($setRun['amount']));
                     }
                 }
                 if(in_array('shift', $services) && isset($data['result']['shiftList']) && is_array($data['result']['setRunPriceList'])){
                     foreach ($data['result']['shiftList'] as $shift) {
-                        $rate = Mage::getModel('shipping/rate_result_method');
-                        $rate->setCarrier($this->_code);
-                        $rate->setCarrierTitle($this->getConfigData('title'));
-                        $rate->setMethod($this->_slugify($onDemand['serviceName']));
-                        $rate->setMethodTitle(ucwords($onDemand['serviceName']));
-                        $rate->setCost($onDemand['amount']);
-                        $rate->setPrice($onDemand['amount']);
-                        $result->append($rate);
+                        $result->append(Mage::getModel('shipping/rate_result_method')
+                                ->setCarrier($this->_code)
+                                ->setCarrierTitle($this->getConfigData('title'))
+                                ->setMethod($this->_slugify($shift['serviceName']))
+                                ->setMethodTitle(ucwords($shift['serviceName']))
+                                ->setCost($shift['amount'])
+                                ->setPrice($shift['amount']));
                     }
                 }
                 if(!empty($result->getAllRates())) return $result;
             }
         }
         catch(Throwable $e){
-            $error = Mage::getModel('shipping/rate_result_error');
-            $error->setCarrier($this->_code);
-            $error->setCarrierTitle($this->getConfigData('title'));
-            $error->setErrorMessage($e->getMessage());
-            return $error;
+            return Mage::getModel('shipping/rate_result_error')
+                  ->setCarrier($this->_code)
+                  ->setCarrierTitle($this->getConfigData('title'))
+                  ->setErrorMessage($e->getMessage());
         }
         return false;
-    }
-
-    /**
-     * Get result of request
-     *
-     * @return mixed
-     */
-    public function getResult()
-    {
-       return $this->_result;
     }
 
     /**
