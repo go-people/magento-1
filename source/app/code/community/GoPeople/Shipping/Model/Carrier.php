@@ -160,8 +160,6 @@ implements Mage_Shipping_Model_Carrier_Interface
     public function collectRates(Mage_Shipping_Model_Rate_Request $request)
     {
 
-        //Mage::helper('ekky_extras/logger')->logVariable($request);
-
         if (!$this->getConfigFlag($this->_activeFlag)) {
             return false;
         }
@@ -272,6 +270,25 @@ implements Mage_Shipping_Model_Carrier_Interface
         return false;
     }
 
+    public function getTrackingInfo($tracking)
+    {
+        $info = array();
+
+        $result = $this->getTracking($tracking);
+
+        if($result instanceof Mage_Shipping_Model_Tracking_Result){
+            if ($trackings = $result->getAllTrackings()) {
+                return $trackings[0];
+            }
+        }
+        elseif (is_string($result) && !empty($result)) {
+            return $result;
+        }
+
+        return false;
+    }
+
+
     /**
      * Get tracking
      *
@@ -280,17 +297,52 @@ implements Mage_Shipping_Model_Carrier_Interface
      */
     public function getTracking($trackings)
     {
-        $this->setTrackingReqeust();
-
         if (!is_array($trackings)) {
             $trackings=array($trackings);
         }
+        $result = Mage::getModel('shipping/tracking_result');
 
-        foreach($trackings as $tracking){
-            $this->_getXMLTracking($tracking);
+        foreach($trackings as $id){
+            try{
+                $curl = new Varien_Http_Adapter_Curl();
+                $curl->setConfig(array(
+                   'maxredirects' => 5,
+                   'timeout'      => 30,
+                   'header'       => false,
+                ))->setOptions(array(
+                   CURLOPT_USERAGENT => 'Magento 1',
+                ))->write(Zend_Http_Client::GET, $this->getEndPoint().'comment?trackingCode='.$id, '1.1', $this->getHttpHeaders($this->getStore()->getId()));
+                $data = Mage::helper('core')->jsonDecode($curl->read());
+                $curl->close();
+                if(isset($data['errorCode']) && 0 < (int)$data['errorCode']){
+                    $result->append(Mage::getModel('shipping/tracking_result_error')
+                                    ->setCarrier(GoPeople_Shipping_Model_Carrier::CODE)
+                                    ->setCarrierTitle($this->getConfigData('title'))
+                                    ->setTracking($id)
+                                    ->setErrorMessage(isset($data['message']) && !empty($data['message']) ? $data['message'] : 'Sorry, but we can\'t find tracking informaiton for %1.',$id));
+                }
+                if(isset($data['result']) && is_array($data['result']) && 0 < count($data['result'])){
+                    $progressDetails = array();
+                    foreach ($data['result'] as $job) {
+                        $progressDetails[] = array('deliverydate'=> $job['createdTime'],'activity'=>$job['comment']['content']);
+                    }
+                    $result->append(Mage::getModel('shipping/tracking_result_status')
+                                ->setCarrier(GoPeople_Shipping_Model_Carrier::CODE)
+                                ->setCarrierTitle($this->getConfigData('title'))
+                                ->setTracking($id)
+                                ->addData(array('progressdetail'=>$progressDetails)));
+                }
+            }
+            catch(\Throwable $e){
+                $result->append(Mage::getModel('shipping/tracking_result_error')
+                                    ->setCarrier(GoPeople_Shipping_Model_Carrier::CODE)
+                                    ->setCarrierTitle($this->getConfigData('title'))
+                                    ->setTracking($id)
+                                    ->setErrorMessage($e->getMessage()));
+            }
         }
 
-        return $this->_result;
+        return $result;
     }
 
     /**
