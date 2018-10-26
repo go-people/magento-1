@@ -39,8 +39,8 @@
         <template>
             <email>
                 <gopeople_email_shipment>
-                   <label>New Go People Shipment</label>
-                   <file>gopeople_shipment_new.html</file>
+                   <label>Go People New Shipment</label>
+                   <file>gopeople/shipment_new.html</file>
                    <type>html</type>
                </gopeople_email_shipment>
             </email>
@@ -80,7 +80,7 @@
     <default>
         <carriers>
             <gopeople>
-                <model>GoPeople_Shipping_Model_Carrier</model>
+                <model>gopeople_shipping/carrier</model>
                 <max_package_weight>10</max_package_weight>
                 <active>0</active>
                 <title>Go People</title>

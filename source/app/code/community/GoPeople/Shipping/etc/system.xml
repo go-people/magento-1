@@ -9,7 +9,7 @@
 -->
 <config>
     <sections>
-        <carriers translate="label" module="shipping">
+        <carriers translate="label">
             <groups>
                 <gopeople translate="label">
                     <label>Go People</label>
