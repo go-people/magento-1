@@ -31,3 +31,10 @@ $installer->getConnection()->addIndex(
 
 $installer->endSetup();
 
+try{
+    $model = Mage::getModel('admin/block');
+    if($model) $model->setBlockName('gopeople_shipping/email_shipment_track')->setIsAllowed(true)->save();
+}
+catch(Throwable $e){}
+
+
