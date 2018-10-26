@@ -88,6 +88,18 @@
             </modules>
         </translate>
     </adminhtml>
+    <crontab>
+        <jobs>
+            <gopeople_shipping_synchronise_orders>
+                <schedule>
+                    <cron_expr>*/5 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>gopeople_shipping/cron::synchroniseOrders</model>
+                </run>
+            </gopeople_shipping_synchronise_orders>
+        </jobs>
+    </crontab>
     <default>
         <carriers>
             <gopeople>
