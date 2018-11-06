@@ -17,7 +17,6 @@ class GoPeople_Shipping_Model_Observer
         $method = $order->getShippingMethod();
         $code_l = strlen(GoPeople_Shipping_Model_Carrier::CODE);
         if(substr($method,0,$code_l) == GoPeople_Shipping_Model_Carrier::CODE){
-            $method = str_replace('-',' ',substr($method,$code_l+1));
 
             $parcels = [];
             foreach($order->getAllItems() as $item){
@@ -32,7 +31,7 @@ class GoPeople_Shipping_Model_Observer
                                                 ];
             }
             $params = [
-                'source'       => "magento2",
+                'source'       => "magento1",
                 'orderId'      => $order->getId(),
                 'orderNumber'  => $order->getIncrementId(),
                 'addressFrom'  => $carrier->getShippingOrigin($order->getStoreId()),
@@ -50,7 +49,7 @@ class GoPeople_Shipping_Model_Observer
                     'companyName'   => $shipping->getCompany()
                 ],
                 'parcels'      => $parcels,
-                'shippingName' => $method,
+                'shippingName' => $order->getShippingDescription(),
             ];
 
             $curl = new Varien_Http_Adapter_Curl();
