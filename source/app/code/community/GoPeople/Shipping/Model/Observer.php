@@ -25,7 +25,7 @@ class GoPeople_Shipping_Model_Observer
                                                         'productId' => $item->getProductId(),
                                                         'sku'       => $item->getSku(),
                                                         'name'      => $item->getName(),
-                                                        'number'    => $item->getQtyOrdered(),
+                                                        'number'    => $item->getQtyToShip(),
                                                         'width'     => 0, 'height'=>0, 'length'=>0,
                                                         'weight'    => $carrier->getWeightInKG($order->getStoreId(),$item->getWeight())
                                                 ];
