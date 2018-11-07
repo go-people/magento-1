@@ -17,6 +17,10 @@ class GoPeople_Shipping_Model_Observer
         $method = $order->getShippingMethod();
         $code_l = strlen(GoPeople_Shipping_Model_Carrier::CODE);
         if(substr($method,0,$code_l) == GoPeople_Shipping_Model_Carrier::CODE){
+            $name = $order->getShippingDescription();
+            $title = $carrier->getConfigData('title');
+            $title_l = strlen($title);
+            if(substr($name,0,$title_l) == $title) $name = substr($name,$title_l+3);
 
             $parcels = [];
             foreach($order->getAllItems() as $item){
@@ -49,7 +53,7 @@ class GoPeople_Shipping_Model_Observer
                     'companyName'   => $shipping->getCompany()
                 ],
                 'parcels'      => $parcels,
-                'shippingName' => $order->getShippingDescription(),
+                'shippingName' => $name,
             ];
 
             $curl = new Varien_Http_Adapter_Curl();
