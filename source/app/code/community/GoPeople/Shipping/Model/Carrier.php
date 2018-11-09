@@ -132,7 +132,7 @@ implements Mage_Shipping_Model_Carrier_Interface
             'contactName'   => Mage::getStoreConfig(Mage_Core_Model_Store::XML_PATH_STORE_STORE_NAME,$storeId),
             'contactNumber' => Mage::getStoreConfig(Mage_Core_Model_Store::XML_PATH_STORE_STORE_PHONE,$storeId),
             'sendUpdateSMS' => false,
-            'contactEmail'  => Mage::getStoreConfig('trans_email/ident_general/email',$storeId),
+            'contactEmail'  => Mage::getStoreConfig('trans_email/ident_'.Mage::getStoreConfig('carriers/gopeople/email',$storeId).'/email',$storeId),
             'isCommercial'  => true,
             'companyName'   => Mage::getStoreConfig(Mage_Core_Model_Store::XML_PATH_STORE_STORE_NAME,$storeId),
         ];
